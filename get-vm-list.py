@@ -9,7 +9,8 @@ from pysphere.resources import VimService_services as VI
 
 parser = argparse.ArgumentParser(description='Show VM propertie')
 
-parser.add_argument('-v', '--vcenter', default='vsphere.admin.oxa.tld',
+# vsphere.admin.oxa.tld
+parser.add_argument('-v', '--vcenter', default='vcenter2.admin.oxa.tld',
                     help='The vcenter host')
 
 parser.add_argument('-u', '--vuser', default='epiconcept',
@@ -20,6 +21,9 @@ parser.add_argument('-p', '--vpass', required=True,
 
 parser.add_argument('-t', '--trace', type=argparse.FileType('w'),
                     help='Trace of connection to vcenter go to a file for debug')
+
+parser.add_argument('-c', '--cluster', default='cluster-01',
+                    help='On what cluster to migrate the VM')
 
 parser.add_argument('-s', '--state', default='On',
                     help='List VM in state On or Off')
@@ -34,7 +38,11 @@ if args.trace:
 server = VIServer()
 server.connect(args.vcenter, args.vuser, args.vpass, **kwargs)
 
-vmlist = server.get_registered_vms(status='powered' + args.state)
+def invert(d): return dict(zip(d.values(), d.keys()))
+def getClusterByName(server, name): return invert(server.get_clusters()).get(name, None)
+cluster_mor = getClusterByName(server, args.cluster)
+
+vmlist = server.get_registered_vms(cluster=cluster_mor, status='powered' + args.state)
 
 for vmpath in vmlist:
     vm = server.get_vm_by_path(vmpath)
