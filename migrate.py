@@ -9,7 +9,8 @@ from pysphere.resources import VimService_services as VI
 
 parser = argparse.ArgumentParser(description='Migrate a VM to another host')
 
-parser.add_argument('-v', '--vcenter', default='vsphere.admin.oxa.tld',
+#vsphere.admin.oxa.tld
+parser.add_argument('-v', '--vcenter', default='vcenter2.admin.oxa.tld',
                     help='The vcenter host')
 
 parser.add_argument('-u', '--vuser', default='epiconcept',

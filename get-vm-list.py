@@ -28,6 +28,8 @@ parser.add_argument('-c', '--cluster', default='cluster-01',
 parser.add_argument('-s', '--state', default='On',
                     help='List VM in state On or Off')
 
+parser.add_argument('-H', '--hosts', action='store_true', help='Show host')
+
 args = parser.parse_args()
 
 kwargs = {};
@@ -44,8 +46,16 @@ cluster_mor = getClusterByName(server, args.cluster)
 
 vmlist = server.get_registered_vms(cluster=cluster_mor, status='powered' + args.state)
 
+# https://groups.google.com/forum/#!topic/pysphere/UCL7epa_sFU
+hosts = server.get_hosts()
+
 for vmpath in vmlist:
     vm = server.get_vm_by_path(vmpath)
-    print vm.get_property('name')
+    host_mor = vm.properties.runtime.host._obj
+    # print vm.properties.runtime.host.name
+    if args.hosts:
+        print vm.get_property('name'), hosts[host_mor]
+    else:
+        print vm.get_property('name')
 
 server.disconnect()
