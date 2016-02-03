@@ -29,6 +29,7 @@ parser.add_argument('-s', '--state', default='On',
                     help='List VM in state On or Off')
 
 parser.add_argument('-H', '--hosts', action='store_true', help='Show host')
+parser.add_argument('-D', '--datastores', action='store_true', help='Show Datastore')
 
 args = parser.parse_args()
 
@@ -55,6 +56,8 @@ for vmpath in vmlist:
     # print vm.properties.runtime.host.name
     if args.hosts:
         print vm.get_property('name'), hosts[host_mor]
+    elif args.datastores:
+        print vm.get_property('name'), vm.properties.datastore[0].name
     else:
         print vm.get_property('name')
 
