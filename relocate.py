@@ -4,6 +4,8 @@ import sys
 import argparse
 import pprint
 
+import ssl
+
 from pysphere import VIServer, VITask, VIProperty
 from pysphere.resources import VimService_services as VI
 
@@ -11,6 +13,7 @@ parser = argparse.ArgumentParser(description='Relocate a VM to another DataStore
 
 help = {
     '-v': 'The vcenter host',
+    '-a': 'validate certs',
     '-u': 'The user account used to connect to vcenter',
     '-p': 'The user password used to connect to vcenter',
     '-t': 'Trace of connection to vcenter go to a file for debug',
@@ -22,6 +25,7 @@ help = {
     }
 
 parser.add_argument('-v', '--vcenter', default='vcenter2.admin.oxa.tld', help=help['-v'])
+parser.add_argument('-a', '--validate_certs', action='store_true', help=help['-a'])
 parser.add_argument('-u', '--vuser', default='epiconcept', help=help['-u'])
 parser.add_argument('-p', '--vpass', required=True, help=help['-p'])
 parser.add_argument('-t', '--trace', type=argparse.FileType('w'), help=help['-t'])
@@ -39,6 +43,9 @@ if args.trace:
 
 # connect to vCenter
 server = VIServer()
+if not args.validate_certs:
+    default_context = ssl._create_default_https_context
+    ssl._create_default_https_context = ssl._create_unverified_context
 server.connect(args.vcenter, args.vuser, args.vpass, **kwargs)
 
 # specify the name of a  VM
