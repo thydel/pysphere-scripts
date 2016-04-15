@@ -4,6 +4,8 @@ import sys
 import argparse
 import pprint
 
+import ssl
+
 from pysphere import VIServer, VITask, VIProperty
 from pysphere.resources import VimService_services as VI
 
@@ -12,6 +14,9 @@ parser = argparse.ArgumentParser(description='Show VM propertie')
 # vsphere.admin.oxa.tld
 parser.add_argument('-v', '--vcenter', default='vcenter2.admin.oxa.tld',
                     help='The vcenter host')
+
+parser.add_argument('-a', '--validate_certs', action='store_true',
+                    help='validate certs')
 
 parser.add_argument('-u', '--vuser', default='epiconcept',
                     help='The user account used to connect to vcenter')
@@ -39,6 +44,9 @@ if args.trace:
 
 # connect to vCenter
 server = VIServer()
+if not args.validate_certs:
+    default_context = ssl._create_default_https_context
+    ssl._create_default_https_context = ssl._create_unverified_context
 server.connect(args.vcenter, args.vuser, args.vpass, **kwargs)
 
 def invert(d): return dict(zip(d.values(), d.keys()))
