@@ -3,6 +3,8 @@
 import sys
 import optparse
 
+import ssl
+
 from pysphere import VIServer
 
 parser = optparse.OptionParser()
@@ -28,6 +30,9 @@ if (len(sys.argv) != 5):
 # connect to vCenter
 server = VIServer()
 #server.connect(opt_vcenter, opt_vuser, opt_vpass, trace_file="debug.txt")
+if True:
+    default_context = ssl._create_default_https_context
+    ssl._create_default_https_context = ssl._create_unverified_context
 server.connect(opt_vcenter, opt_vuser, opt_vpass)
 
 # specify the name of a  VM
